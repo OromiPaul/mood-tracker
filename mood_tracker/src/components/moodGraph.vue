@@ -12,7 +12,7 @@
   import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 
   import { db } from '@/firebase';
-  import { collection, getDocs } from "firebase/firestore";
+  import { collection, query, getDocs, orderBy, limit } from "firebase/firestore";
   
   ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
   
@@ -23,7 +23,9 @@
       return {
         chartData: {
           labels: [],
-          datasets: [ { data: [] } ]
+          datasets: [{ 
+            data: [] 
+          }]
         },
         chartOptions: {
           responsive: true
@@ -35,21 +37,28 @@
     },
     methods: {
       async fetchData(){
-        const querySnapshot = await getDocs(collection(db, "moods"));
+        const moods = collection(db, "moods");
+        const q = query(moods, orderBy("timestamp", 'asc'), limit(7));
+
+        const querySnapshot = await getDocs(q);
+
+        console.log(querySnapshot.docs)
         
         const labels = [];
-        const data = [];
+        var data = [];
         querySnapshot.forEach(doc => {
           const timestamp = doc.data().timestamp;
-          console.log(timestamp);
           const date = timestamp.toDate();
-          console.log(date);
           const day = date.getDate();
 
           labels.push(day);
           data.push(doc.data().mood);
-        })
-        this.chartData = { labels, datasets: [{ data }]};
+        });
+
+        this.chartData = { labels, datasets: [{ 
+          label: "Last week data",
+          data
+         }]};
       }
     }
   }
