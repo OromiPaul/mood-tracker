@@ -35,9 +35,8 @@ export default {
   },
   mounted(){
     setTimeout(() => {
-      console.log("Retardée d'une seconde.");
       this.fetchLastData();
-    }, "3000");
+    }, "2500");
     
   },
   methods:{

@@ -7,12 +7,16 @@
   </template>
   
   <script>
-  import { db } from '@/firebase';
-  import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-
+  import { useMoodStore } from '/stores/moodStore'
 
   export default {
     name: 'moodSlider',
+    setup(){
+      const moods = useMoodStore()
+      return {
+        insertMood: moods.insertMood
+      }
+    },
     data() {
       return {
         moodValue: 3, // Default mood value, you can set it to any default value you like
@@ -24,16 +28,7 @@
         this.$emit('moodSelected', this.moodValue);
       },
       async saveMood() {
-        try {
-            const moodEntry = {
-                mood: this.moodValue,
-                timestamp: serverTimestamp() // Correct usage of serverTimestamp
-            };
-        await addDoc(collection(db, 'moods'), moodEntry);
-        console.log("added successfully");
-        } catch(error) {
-            console.error(error);
-        }
+        this.insertMood(this.moodValue)
     }
   }
 }
