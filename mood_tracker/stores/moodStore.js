@@ -17,7 +17,6 @@ export const useMoodStore = defineStore('moods', {
           timestamp: serverTimestamp()
         };
         await addDoc(moods, moodEntry);
-        console.log("added successfully");
       }
       catch(error){
         console.log(error);
@@ -25,6 +24,12 @@ export const useMoodStore = defineStore('moods', {
     },
     async fetchLastMood(){
       const q = query(moods, orderBy("timestamp", "desc"), limit(1));
+      const querySnapshot = await getDocs(q);
+
+      return querySnapshot;
+    },
+    async fetchLastMoods(limiter){
+      const q = query(moods, orderBy("timestamp", "asc"), limit(limiter));
       const querySnapshot = await getDocs(q);
 
       return querySnapshot;
